@@ -78,3 +78,19 @@ npm run dev:socket
 ## 🤝 How to Contribute
 
 [Hướng dẫn cách tạo một module mới: tạo thư mục, implement `AppModule`, v.v.]
+
+## 💡 Tips for Managing Dependencies in this Monorepo
+
+To keep this boilerplate clean and free of phantom `node_modules` folders, always follow these rules:
+
+1. **Install dependencies targeting a specific workspace**:
+   Never `cd` into a sub-module to run `npm install`. Always run from the root using the `-w` flag.
+   ```bash
+   npm install package-name -w @core/cache
+   ```
+2. **Sync versions across workspaces**:
+   If two modules use the same library (e.g., `zod`), ensure they use the **exact same version**. If versions differ, NPM will not hoist them to the root.
+3. **Keep Shared DevDependencies at the Root**:
+   Packages like `typescript`, `@types/node`, `eslint` should only be installed at the root level `package.json`.
+4. **Use npm dedupe**:
+   Occasionally run `npm dedupe` at the root down to clean up and hoist identical dependencies.
