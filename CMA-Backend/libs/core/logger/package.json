@@ -2,7 +2,7 @@
     "name": "@core/logger",
     "version": "1.0.0",
     "description": "Winston-based unified logging service",
-    "main": "index.js",
+    "main": "index.ts",
     "private": true,
     "dependencies": {
         "winston": "^3.19.0"

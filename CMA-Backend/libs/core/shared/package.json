@@ -1,7 +1,7 @@
 {
     "name": "@core/shared",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "index.ts",
     "private": true,
     "dependencies": {
         "jsonwebtoken": "^9.0.3",

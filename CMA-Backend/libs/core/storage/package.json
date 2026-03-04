@@ -2,10 +2,13 @@
     "name": "@core/storage",
     "version": "1.0.0",
     "description": "Storage adapters and middleware (Cloudinary, Multer)",
-    "main": "src/index.js",
+    "main": "index.ts",
     "private": true,
     "dependencies": {
         "cloudinary": "^2.9.0",
         "multer": "^2.1.0"
+    },
+    "devDependencies": {
+        "@types/multer": "^2.0.0"
     }
 }

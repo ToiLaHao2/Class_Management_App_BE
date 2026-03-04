@@ -16,8 +16,13 @@
     "libs/modules/*"
   ],
   "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/lru-cache": "^7.10.9",
+    "@types/node": "^25.3.3",
     "concurrently": "^8.0.0",
-    "nodemon": "^3.0.0"
+    "nodemon": "^3.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
   "author": "",
   "license": "ISC"

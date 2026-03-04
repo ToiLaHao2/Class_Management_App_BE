@@ -2,9 +2,9 @@
   "name": "worker",
   "version": "1.0.0",
   "description": "",
-  "main": "src/worker.js",
+  "main": "src/worker.ts",
   "scripts": {
-    "dev": "nodemon src/worker.js"
+    "dev": "tsx watch src/worker.ts"
   },
   "keywords": [],
   "author": "",
