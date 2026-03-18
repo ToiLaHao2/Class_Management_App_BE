@@ -34,4 +34,9 @@ export class FirebaseUsersRepository implements IUsersRepository {
         const doc = await this.baseRepo.create(payload);
         return doc as unknown as IUserEntity;
     }
+
+    async update(id: string, partialData: Partial<IUserEntity>): Promise<IUserEntity> {
+        const doc = await this.baseRepo.update(id, partialData as unknown as Record<string, unknown>);
+        return doc as unknown as IUserEntity;
+    }
 }

@@ -17,6 +17,7 @@ import { ValidateError } from '@tsoa/runtime';
 // === APP SETUP ===
 const app = express();
 const PORT = appConfig.port;
+const API_PREFIX = '/api';
 
 // === MIDDLEWARES ===
 app.use(helmet());
@@ -41,7 +42,6 @@ const authLimiter = rateLimit({
     message: { error: 'Too many auth attempts, please wait before trying again.' },
 });
 app.use(globalLimiter);
-app.use('/auth', authLimiter);
 
 // === SYSTEM CHECK ===
 runSystemCheck();
@@ -53,17 +53,25 @@ app.get('/', (_req: Request, res: Response) => {
         status: 'active',
         timestamp: new Date(),
         docs: `http://localhost:${PORT}/docs`,
+        apiBaseUrl: `http://localhost:${PORT}${API_PREFIX}`,
     });
 });
 
 // === SWAGGER UI ===
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+// === API APP (prefix all APIs for FE consistency) ===
+// Note: tsoa RegisterRoutes expects an Express Application (not Router).
+const api = express();
+api.use('/auth', authLimiter);
+
 // === TSOA GENERATED ROUTES ===
-RegisterRoutes(app);
+RegisterRoutes(api);
 
 // === LOAD LEGACY MODULES (auto-discovery for non-tsoa modules) ===
-loadModules(app, container);
+loadModules(api, container);
+
+app.use(API_PREFIX, api);
 
 // === 404 NOT FOUND HANDLER ===
 app.use((req: Request, _res: Response, next: NextFunction) => {

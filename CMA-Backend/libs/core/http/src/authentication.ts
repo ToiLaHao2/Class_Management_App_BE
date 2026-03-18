@@ -29,7 +29,9 @@ export async function expressAuthentication(
 
                 // Check scopes (roles) if provided in @Security("jwt", ["admin"])
                 if (scopes && scopes.length > 0) {
-                    const userRoles = decoded.roles || [];
+                    const userRoles: string[] = Array.isArray(decoded?.roles)
+                        ? decoded.roles
+                        : (decoded?.role ? [decoded.role] : []);
                     const hasRequiredScope = scopes.some(scope => userRoles.includes(scope));
 
                     if (!hasRequiredScope) {

@@ -9,6 +9,7 @@ export interface IUser {
     avatar?: string;
     createdAt: Date;
     // Mật khẩu đã mã hoá sẽ lưu dưới DB, không bao giờ lộ ra ngoài API (nên không đưa vào dto response)
+    mustChangePassword?: boolean;
     isDeleted: boolean;
 }
 
@@ -34,6 +35,7 @@ export interface IUsersRepository {
     findById(id: string): Promise<IUserEntity | null>;
     findByEmail(email: string): Promise<IUserEntity | null>;
     create(data: Omit<IUserEntity, 'id' | 'createdAt' | 'isDeleted'>): Promise<IUserEntity>;
+    update(id: string, partialData: Partial<IUserEntity>): Promise<IUserEntity>;
 }
 
 /**

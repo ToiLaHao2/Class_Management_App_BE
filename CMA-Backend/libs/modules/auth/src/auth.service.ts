@@ -2,10 +2,11 @@ import * as jwt from 'jsonwebtoken';
 import { IUsersService, LoginDTO } from '@modules/users';
 import { UnauthorizedError } from '@core/exceptions';
 import { securityConfig } from '@core/config';
-import { comparePassword } from '@core/utils';
+import { comparePassword, hashPassword } from '@core/utils';
 
 export interface IAuthService {
     login(data: LoginDTO): Promise<{ accessToken: string, user: Record<string, any> }>;
+    changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{ message: string }>;
 }
 
 export class AuthService implements IAuthService {
@@ -36,11 +37,11 @@ export class AuthService implements IAuthService {
         const payload = {
             userId: user.id,
             email: user.email,
-            role: user.role
+            role: user.role,
+            roles: [user.role],
         };
 
-        const secretKey = securityConfig.jwtSecret || 'secret123456789'; // Ưu tiên cấu hình môi trường
-        const accessToken = jwt.sign(payload, secretKey, { expiresIn: '1d' });
+        const accessToken = jwt.sign(payload, securityConfig.jwtSecret, { expiresIn: '1d' });
 
         // 4. Lọc bỏ các trường nhạy cảm trả về UI
         const { passwordHash: _, isDeleted, ...safeUser } = user;
@@ -49,5 +50,25 @@ export class AuthService implements IAuthService {
             accessToken,
             user: safeUser
         };
+    }
+
+    async changePassword(userId: string, currentPassword: string, newPassword: string) {
+        const user = await this.usersService.getUserById(userId);
+        if (!user) {
+            throw new UnauthorizedError('Người dùng không tồn tại');
+        }
+        if (user.isDeleted) {
+            throw new UnauthorizedError('Tài khoản đã bị vô hiệu hóa');
+        }
+
+        const isPasswordValid = await comparePassword(currentPassword, user.passwordHash);
+        if (!isPasswordValid) {
+            throw new UnauthorizedError('Mật khẩu hiện tại không đúng');
+        }
+
+        const newHash = await hashPassword(newPassword);
+        await this.usersService.updatePasswordHash(userId, newHash, false);
+
+        return { message: 'Đổi mật khẩu thành công' };
     }
 }

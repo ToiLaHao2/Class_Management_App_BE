@@ -6,6 +6,8 @@ export interface IUsersService {
     getUserById(id: string): Promise<IUserEntity | null>;
     getUserByEmail(email: string): Promise<IUserEntity | null>;
     createUser(data: CreateUserDTO): Promise<Omit<IUserEntity, 'passwordHash'>>;
+    updatePasswordHash(userId: string, passwordHash: string, mustChangePassword: boolean): Promise<void>;
+    updateProfile(userId: string, data: { fullName?: string; avatar?: string }): Promise<Omit<IUserEntity, 'passwordHash'>>;
 }
 
 export class UsersService implements IUsersService {
@@ -38,7 +40,8 @@ export class UsersService implements IUsersService {
             email: data.email,
             passwordHash,
             fullName: data.fullName,
-            role: data.role
+            role: data.role,
+            mustChangePassword: false,
         };
         if (data.avatar) payload.avatar = data.avatar;
 
@@ -47,6 +50,19 @@ export class UsersService implements IUsersService {
 
         // 5. Loại bỏ passwordHash trước khi trả về
         const { passwordHash: _, ...userWithoutPassword } = newUser;
+        return userWithoutPassword;
+    }
+
+    async updatePasswordHash(userId: string, passwordHash: string, mustChangePassword: boolean): Promise<void> {
+        await this.usersRepository.update(userId, { passwordHash, mustChangePassword });
+    }
+
+    async updateProfile(userId: string, data: { fullName?: string; avatar?: string }): Promise<Omit<IUserEntity, 'passwordHash'>> {
+        const updated = await this.usersRepository.update(userId, {
+            ...(data.fullName ? { fullName: data.fullName } : {}),
+            ...(data.avatar ? { avatar: data.avatar } : {}),
+        });
+        const { passwordHash: _, ...userWithoutPassword } = updated;
         return userWithoutPassword;
     }
 }

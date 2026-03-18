@@ -1,4 +1,4 @@
-import { firebaseAdapter } from '@core/database';
+import { firebaseAdapter, seedSuperAdmin } from '@core/database';
 import { cloudinaryAdapter } from '@core/storage';
 import { cacheManager } from '@core/cache';
 
@@ -10,7 +10,12 @@ export const runSystemCheck = async (): Promise<void> => {
 
     try {
         // 1. Khoi tao Database (Firebase)
-        firebaseAdapter.connect();
+        const { db, admin } = firebaseAdapter.connect();
+
+        // 1.1 Seed default Super Admin (optional, env-driven)
+        if (db && admin) {
+            await seedSuperAdmin(db, admin);
+        }
 
         // 2. Khoi tao Storage (Cloudinary)
         cloudinaryAdapter.connect();

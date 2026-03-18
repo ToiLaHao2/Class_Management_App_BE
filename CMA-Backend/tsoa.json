@@ -14,7 +14,7 @@
             "description": "Class Management Application — Auto-generated API Documentation"
         },
         "host": "localhost:3000",
-        "basePath": "/",
+        "basePath": "/api",
         "securityDefinitions": {
             "jwt": {
                 "type": "apiKey",
