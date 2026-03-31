@@ -8,15 +8,22 @@
 		"responses": {},
 		"schemas": {
 			"IUser": {
-				"description": "User Model — TypeScript Interface & Response DTO",
+				"description": "User Model — TypeScript Interface & Response DTO\nSchema mới: UUID, username, date_of_birth, is_active",
 				"properties": {
 					"id": {
+						"type": "string"
+					},
+					"username": {
 						"type": "string"
 					},
 					"email": {
 						"type": "string"
 					},
-					"fullName": {
+					"date_of_birth": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"avatar_url": {
 						"type": "string"
 					},
 					"role": {
@@ -28,27 +35,26 @@
 							"admin"
 						]
 					},
-					"avatar": {
-						"type": "string"
+					"is_active": {
+						"type": "boolean"
 					},
-					"createdAt": {
+					"created_at": {
 						"type": "string",
 						"format": "date-time"
 					},
-					"mustChangePassword": {
-						"type": "boolean"
-					},
-					"isDeleted": {
-						"type": "boolean"
+					"updated_at": {
+						"type": "string",
+						"format": "date-time"
 					}
 				},
 				"required": [
 					"id",
+					"username",
 					"email",
-					"fullName",
 					"role",
-					"createdAt",
-					"isDeleted"
+					"is_active",
+					"created_at",
+					"updated_at"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -62,7 +68,7 @@
 					"password": {
 						"type": "string"
 					},
-					"fullName": {
+					"username": {
 						"type": "string"
 					},
 					"role": {
@@ -74,14 +80,17 @@
 							"admin"
 						]
 					},
-					"avatar": {
+					"avatar_url": {
+						"type": "string"
+					},
+					"date_of_birth": {
 						"type": "string"
 					}
 				},
 				"required": [
 					"email",
 					"password",
-					"fullName",
+					"username",
 					"role"
 				],
 				"type": "object",
@@ -90,10 +99,10 @@
 			"UpdateUserDTO": {
 				"description": "DTO for updating a user",
 				"properties": {
-					"fullName": {
+					"username": {
 						"type": "string"
 					},
-					"avatar": {
+					"avatar_url": {
 						"type": "string"
 					},
 					"role": {
@@ -104,6 +113,141 @@
 							"parent",
 							"admin"
 						]
+					},
+					"date_of_birth": {
+						"type": "string"
+					},
+					"is_active": {
+						"type": "boolean"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IContact": {
+				"description": "Contact info liên kết với User",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"user_id": {
+						"type": "string"
+					},
+					"category_id": {
+						"type": "string"
+					},
+					"contact_value": {
+						"type": "string"
+					},
+					"is_public": {
+						"type": "boolean"
+					},
+					"is_primary": {
+						"type": "boolean"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"user_id",
+					"contact_value",
+					"is_public",
+					"is_primary",
+					"created_at",
+					"updated_at"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateContactDTO": {
+				"description": "DTO for creating a contact",
+				"properties": {
+					"contact_value": {
+						"type": "string"
+					},
+					"category_id": {
+						"type": "string"
+					},
+					"is_public": {
+						"type": "boolean"
+					},
+					"is_primary": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"contact_value"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ICategory": {
+				"description": "Categories Model — Bảng lookup dùng chung cho toàn hệ thống.\nThay thế hardcoded enums bằng dữ liệu DB-driven.",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"is_active": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"id",
+					"type",
+					"name",
+					"is_active"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateCategoryDTO": {
+				"properties": {
+					"type": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"is_active": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"type",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpdateCategoryDTO": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"is_active": {
+						"type": "boolean"
 					}
 				},
 				"type": "object",
@@ -175,21 +319,12 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Pick_IUserEntity.Exclude_keyofIUserEntity.passwordHash__": {
-				"properties": {},
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_IUserEntity.passwordHash_": {
-				"$ref": "#/components/schemas/Pick_IUserEntity.Exclude_keyofIUserEntity.passwordHash__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
 			"UpdateProfileDTO": {
 				"properties": {
-					"fullName": {
+					"username": {
 						"type": "string"
 					},
-					"avatar": {
+					"avatar_url": {
 						"type": "string"
 					}
 				},
@@ -334,7 +469,7 @@
 						}
 					}
 				},
-				"description": "Create a new user (đã bị auth.controller đảm nhiệm nhưng vẫn giữ lại theo code cũ form)",
+				"description": "Create a new user",
 				"tags": [
 					"Users"
 				],
@@ -350,47 +485,6 @@
 						}
 					}
 				}
-			}
-		},
-		"/users/by-email/{email}": {
-			"get": {
-				"operationId": "GetUserByEmail",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"allOf": [
-										{
-											"$ref": "#/components/schemas/IUser"
-										}
-									],
-									"nullable": true
-								}
-							}
-						}
-					}
-				},
-				"description": "Get a single user by email\r\nAPI này tạo phụ để test nhanh việc get User bằng DB",
-				"tags": [
-					"Users"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "email",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
 			}
 		},
 		"/users/{userId}": {
@@ -424,7 +518,6 @@
 				],
 				"parameters": [
 					{
-						"description": "The user's unique identifier",
 						"in": "path",
 						"name": "userId",
 						"required": true,
@@ -461,7 +554,6 @@
 				],
 				"parameters": [
 					{
-						"description": "The user's unique identifier",
 						"in": "path",
 						"name": "userId",
 						"required": true,
@@ -516,7 +608,6 @@
 				],
 				"parameters": [
 					{
-						"description": "The user's unique identifier",
 						"in": "path",
 						"name": "userId",
 						"required": true,
@@ -525,6 +616,89 @@
 						}
 					}
 				]
+			}
+		},
+		"/users/{userId}/contacts": {
+			"get": {
+				"operationId": "GetUserContacts",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IContact"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all contacts for a user",
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "AddContact",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IContact"
+								}
+							}
+						}
+					}
+				},
+				"description": "Add a contact to a user",
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateContactDTO"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/admin/stats": {
@@ -579,6 +753,201 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/categories": {
+			"get": {
+				"operationId": "GetCategories",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ICategory"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Lấy tất cả categories (có thể filter theo type)",
+				"tags": [
+					"Categories"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Optional: filter theo type (e.g. 'class_category', 'status')",
+						"in": "query",
+						"name": "type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "CreateCategory",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ICategory"
+								}
+							}
+						}
+					}
+				},
+				"description": "Tạo category mới (Admin only)",
+				"tags": [
+					"Categories"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateCategoryDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/categories/{id}": {
+			"get": {
+				"operationId": "GetCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ICategory"
+								}
+							}
+						}
+					}
+				},
+				"description": "Lấy category theo ID",
+				"tags": [
+					"Categories"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ICategory"
+								}
+							}
+						}
+					}
+				},
+				"description": "Cập nhật category (Admin only)",
+				"tags": [
+					"Categories"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateCategoryDTO"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Xóa category (Admin only)",
+				"tags": [
+					"Categories"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/auth/login": {
@@ -650,7 +1019,7 @@
 								"schema": {
 									"properties": {
 										"user": {
-											"$ref": "#/components/schemas/Omit_IUserEntity.passwordHash_"
+											"$ref": "#/components/schemas/IUser"
 										},
 										"message": {
 											"type": "string"

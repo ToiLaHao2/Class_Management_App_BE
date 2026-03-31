@@ -1,14 +1,14 @@
-import { IUsersRepository, CreateUserDTO, IUserEntity } from './user.model';
+import { IUsersRepository, IContactsRepository, CreateUserDTO, IUserEntity, IUser, IContact, CreateContactDTO, UpdateUserDTO } from './user.model';
 import { BadRequestError } from '@core/exceptions';
 import { hashPassword } from '@core/utils';
 
 export interface IUsersService {
     getUserById(id: string): Promise<IUserEntity | null>;
     getUserByEmail(email: string): Promise<IUserEntity | null>;
-    getAllUsers(): Promise<Omit<IUserEntity, 'passwordHash'>[]>;
-    createUser(data: CreateUserDTO): Promise<Omit<IUserEntity, 'passwordHash'>>;
-    updatePasswordHash(userId: string, passwordHash: string, mustChangePassword: boolean): Promise<void>;
-    updateProfile(userId: string, data: { fullName?: string; avatar?: string; role?: string }): Promise<Omit<IUserEntity, 'passwordHash'>>;
+    getAllUsers(): Promise<IUser[]>;
+    createUser(data: CreateUserDTO): Promise<IUser>;
+    updatePasswordHash(userId: string, hashedPassword: string): Promise<void>;
+    updateProfile(userId: string, data: UpdateUserDTO): Promise<IUser>;
     softDeleteUser(userId: string): Promise<{ message: string }>;
     getDashboardStats(): Promise<{
         totalUsers: number;
@@ -19,13 +19,31 @@ export interface IUsersService {
         services: { name: string; status: 'healthy' | 'warning' | 'error'; latency: string }[];
         uptime: string;
     }>;
+    // Contacts
+    getUserContacts(userId: string): Promise<IContact[]>;
+    addContact(userId: string, data: CreateContactDTO): Promise<IContact>;
+    updateContact(contactId: string, data: Partial<IContact>): Promise<IContact>;
+    deleteContact(contactId: string): Promise<{ message: string }>;
+}
+
+/**
+ * Loại bỏ hashed_password từ IUserEntity → IUser
+ */
+function toSafeUser(entity: IUserEntity): IUser {
+    const { hashed_password: _, ...safe } = entity;
+    return safe;
 }
 
 export class UsersService implements IUsersService {
     private usersRepository: IUsersRepository;
+    private contactsRepository: IContactsRepository;
 
-    constructor({ usersRepository }: { usersRepository: IUsersRepository }) {
+    constructor({ usersRepository, contactsRepository }: {
+        usersRepository: IUsersRepository;
+        contactsRepository: IContactsRepository;
+    }) {
         this.usersRepository = usersRepository;
+        this.contactsRepository = contactsRepository;
     }
 
     async getUserById(id: string): Promise<IUserEntity | null> {
@@ -36,63 +54,55 @@ export class UsersService implements IUsersService {
         return this.usersRepository.findByEmail(email);
     }
 
-    async getAllUsers(): Promise<Omit<IUserEntity, 'passwordHash'>[]> {
+    async getAllUsers(): Promise<IUser[]> {
         const users = await this.usersRepository.findAll();
-        return users.map(({ passwordHash: _, ...u }) => u);
+        return users.map(toSafeUser);
     }
 
-    async createUser(data: CreateUserDTO): Promise<Omit<IUserEntity, 'passwordHash'>> {
-        // 1. Kiểm tra email đã tồn tại chưa
-        const existingUser = await this.usersRepository.findByEmail(data.email);
-        if (existingUser) {
+    async createUser(data: CreateUserDTO): Promise<IUser> {
+        const existing = await this.usersRepository.findByEmail(data.email);
+        if (existing) {
             throw new BadRequestError('Email đã được sử dụng');
         }
 
-        // 2. Hash mật khẩu bằng Utility của Core
-        const passwordHash = await hashPassword(data.password);
+        const hashed_password = await hashPassword(data.password);
 
-        // 3. Chuẩn bị payload lưu DB
-        const payload: Partial<IUserEntity> = {
+        const payload: Omit<IUserEntity, 'id' | 'created_at' | 'updated_at'> = {
             email: data.email,
-            passwordHash,
-            fullName: data.fullName,
+            username: data.username,
+            hashed_password,
             role: data.role,
-            mustChangePassword: false,
+            is_active: true,
+            date_of_birth: data.date_of_birth ? new Date(data.date_of_birth) : undefined,
+            avatar_url: data.avatar_url,
         };
-        if (data.avatar) payload.avatar = data.avatar;
 
-        // 4. Lưu vào Database thông qua Repository
-        const newUser = await this.usersRepository.create(payload as Omit<IUserEntity, 'id' | 'createdAt' | 'isDeleted'>);
-
-        // 5. Loại bỏ passwordHash trước khi trả về
-        const { passwordHash: _, ...userWithoutPassword } = newUser;
-        return userWithoutPassword;
+        const newUser = await this.usersRepository.create(payload);
+        return toSafeUser(newUser);
     }
 
-    async updatePasswordHash(userId: string, passwordHash: string, mustChangePassword: boolean): Promise<void> {
-        await this.usersRepository.update(userId, { passwordHash, mustChangePassword });
+    async updatePasswordHash(userId: string, hashedPassword: string): Promise<void> {
+        await this.usersRepository.update(userId, { hashed_password: hashedPassword });
     }
 
-    async updateProfile(userId: string, data: { fullName?: string; avatar?: string; role?: string }): Promise<Omit<IUserEntity, 'passwordHash'>> {
-        const updated = await this.usersRepository.update(userId, {
-            ...(data.fullName ? { fullName: data.fullName } : {}),
-            ...(data.avatar ? { avatar: data.avatar } : {}),
-            ...(data.role ? { role: data.role as IUserEntity['role'] } : {}),
-        });
-        const { passwordHash: _, ...userWithoutPassword } = updated;
-        return userWithoutPassword;
+    async updateProfile(userId: string, data: UpdateUserDTO): Promise<IUser> {
+        const updatePayload: Partial<IUserEntity> = {};
+        if (data.username) updatePayload.username = data.username;
+        if (data.avatar_url) updatePayload.avatar_url = data.avatar_url;
+        if (data.role) updatePayload.role = data.role as IUserEntity['role'];
+        if (data.date_of_birth) updatePayload.date_of_birth = new Date(data.date_of_birth);
+        if (data.is_active !== undefined) updatePayload.is_active = data.is_active;
+
+        const updated = await this.usersRepository.update(userId, updatePayload);
+        return toSafeUser(updated);
     }
 
     async softDeleteUser(userId: string): Promise<{ message: string }> {
-        await this.usersRepository.update(userId, { isDeleted: true });
+        await this.usersRepository.update(userId, { is_active: false });
         return { message: `Người dùng ${userId} đã bị vô hiệu hóa.` };
     }
 
-    async getDashboardStats(): Promise<{
-        totalUsers: number;
-        roleDistribution: { label: string; count: number; percentage: number; color: string }[];
-        recentGrowth: string;
-    }> {
+    async getDashboardStats() {
         const users = await this.usersRepository.findAll();
         const totalUsers = users.length;
 
@@ -109,24 +119,42 @@ export class UsersService implements IUsersService {
             { label: 'Phụ huynh', count: counts.parent, percentage: totalUsers ? Math.round((counts.parent / totalUsers) * 100) : 0, color: 'bg-amber-400' },
         ];
 
-        return {
-            totalUsers,
-            roleDistribution,
-            recentGrowth: '+5% tuần này' // Mock growth for now
-        };
+        return { totalUsers, roleDistribution, recentGrowth: '+5% tuần này' };
     }
 
-    async getSystemHealth(): Promise<{
-        services: { name: string; status: 'healthy' | 'warning' | 'error'; latency: string }[];
-        uptime: string;
-    }> {
+    async getSystemHealth() {
         return {
             services: [
-                { name: 'Core API Server', status: 'healthy', latency: '24ms' },
-                { name: 'Firestore DB', status: 'healthy', latency: '15ms' },
-                { name: 'Auth Module', status: 'healthy', latency: '8ms' },
+                { name: 'Core API Server', status: 'healthy' as const, latency: '24ms' },
+                { name: 'PostgreSQL DB', status: 'healthy' as const, latency: '15ms' },
+                { name: 'Auth Module', status: 'healthy' as const, latency: '8ms' },
             ],
             uptime: '99.9%'
         };
+    }
+
+    // === Contacts ===
+
+    async getUserContacts(userId: string): Promise<IContact[]> {
+        return this.contactsRepository.findByUserId(userId);
+    }
+
+    async addContact(userId: string, data: CreateContactDTO): Promise<IContact> {
+        return this.contactsRepository.create({
+            user_id: userId,
+            contact_value: data.contact_value,
+            category_id: data.category_id,
+            is_public: data.is_public ?? false,
+            is_primary: data.is_primary ?? false,
+        });
+    }
+
+    async updateContact(contactId: string, data: Partial<IContact>): Promise<IContact> {
+        return this.contactsRepository.update(contactId, data);
+    }
+
+    async deleteContact(contactId: string): Promise<{ message: string }> {
+        await this.contactsRepository.delete(contactId);
+        return { message: 'Contact deleted' };
     }
 }

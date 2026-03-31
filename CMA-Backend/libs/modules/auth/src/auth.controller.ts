@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Route, Tags, Response, Security, Request, Get, Put } from '@tsoa/runtime';
 import { IAuthService } from './auth.service';
-import { IUsersService, LoginDTO, CreateUserDTO, IUser } from '@modules/users';
+import { IUsersService, LoginDTO, CreateUserDTO, IUser, UpdateUserDTO } from '@modules/users';
 import { ValidateError } from '@tsoa/runtime';
 import { UnauthorizedError } from '@core/exceptions';
 
@@ -10,8 +10,8 @@ interface ChangePasswordDTO {
 }
 
 interface UpdateProfileDTO {
-    fullName?: string;
-    avatar?: string;
+    username?: string;
+    avatar_url?: string;
 }
 
 @Route('auth')
@@ -20,7 +20,6 @@ export class AuthController extends Controller {
     private readonly authService: IAuthService;
     private readonly usersService: IUsersService;
 
-    // 1. Tiêm 2 Service vào Controller thông qua Injector PROXY Object
     constructor({ authService, usersService }: { authService: IAuthService, usersService: IUsersService }) {
         super();
         this.authService = authService;
@@ -44,9 +43,8 @@ export class AuthController extends Controller {
     @Response<ValidateError>(422, 'Validation Failed')
     @Response(400, 'Bad Request - Email Exists')
     public async register(@Body() body: CreateUserDTO) {
-        // Validation role (nếu cần thiết, hoặc để Swagger config enum lo)
         const user = await this.usersService.createUser(body);
-        this.setStatus(201); // Created
+        this.setStatus(201);
         return {
             message: "Đăng ký tài khoản thành công",
             user
@@ -68,7 +66,7 @@ export class AuthController extends Controller {
         if (!user) {
             throw new UnauthorizedError('User not found');
         }
-        const { passwordHash: _, ...safeUser } = user;
+        const { hashed_password: _, ...safeUser } = user;
         return safeUser as unknown as IUser;
     }
 

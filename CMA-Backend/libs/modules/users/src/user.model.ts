@@ -1,23 +1,38 @@
 /**
  * User Model — TypeScript Interface & Response DTO
+ * Schema mới: UUID, username, date_of_birth, is_active
  */
 export interface IUser {
-    id: string;
+    id: string; // UUID
+    username: string;
     email: string;
-    fullName: string;
+    date_of_birth?: Date;
+    avatar_url?: string;
     role: 'student' | 'teacher' | 'parent' | 'admin';
-    avatar?: string;
-    createdAt: Date;
-    // Mật khẩu đã mã hoá sẽ lưu dưới DB, không bao giờ lộ ra ngoài API (nên không đưa vào dto response)
-    mustChangePassword?: boolean;
-    isDeleted: boolean;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
 }
 
 /**
- * Entity lưu trong Database (Mở rộng từ IUser để chứa Password Hash)
+ * Entity lưu trong Database (chứa Password Hash)
  */
 export interface IUserEntity extends IUser {
-    passwordHash: string;
+    hashed_password: string;
+}
+
+/**
+ * Contact info liên kết với User
+ */
+export interface IContact {
+    id: string; // UUID
+    user_id: string;
+    category_id?: string;
+    contact_value: string;
+    is_public: boolean;
+    is_primary: boolean;
+    created_at: Date;
+    updated_at: Date;
 }
 
 /**
@@ -29,14 +44,24 @@ export interface LoginDTO {
 }
 
 /**
- * Interface Repository Cam Kết Cấu Trúc Data Cho Module Users
+ * Interface Repository cho module Users
  */
 export interface IUsersRepository {
     findById(id: string): Promise<IUserEntity | null>;
     findByEmail(email: string): Promise<IUserEntity | null>;
     findAll(): Promise<IUserEntity[]>;
-    create(data: Omit<IUserEntity, 'id' | 'createdAt' | 'isDeleted'>): Promise<IUserEntity>;
+    create(data: Omit<IUserEntity, 'id' | 'created_at' | 'updated_at'>): Promise<IUserEntity>;
     update(id: string, partialData: Partial<IUserEntity>): Promise<IUserEntity>;
+}
+
+/**
+ * Interface Repository cho Contacts
+ */
+export interface IContactsRepository {
+    findByUserId(userId: string): Promise<IContact[]>;
+    create(data: Omit<IContact, 'id' | 'created_at' | 'updated_at'>): Promise<IContact>;
+    update(id: string, data: Partial<IContact>): Promise<IContact>;
+    delete(id: string): Promise<boolean>;
 }
 
 /**
@@ -45,16 +70,29 @@ export interface IUsersRepository {
 export interface CreateUserDTO {
     email: string;
     password: string;
-    fullName: string;
+    username: string;
     role: 'student' | 'teacher' | 'parent' | 'admin';
-    avatar?: string;
+    avatar_url?: string;
+    date_of_birth?: string; // ISO string
 }
 
 /**
  * DTO for updating a user
  */
 export interface UpdateUserDTO {
-    fullName?: string;
-    avatar?: string;
+    username?: string;
+    avatar_url?: string;
     role?: 'student' | 'teacher' | 'parent' | 'admin';
+    date_of_birth?: string;
+    is_active?: boolean;
+}
+
+/**
+ * DTO for creating a contact
+ */
+export interface CreateContactDTO {
+    contact_value: string;
+    category_id?: string;
+    is_public?: boolean;
+    is_primary?: boolean;
 }

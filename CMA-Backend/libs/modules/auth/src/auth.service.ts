@@ -17,23 +17,24 @@ export class AuthService implements IAuthService {
     }
 
     async login(data: LoginDTO) {
-        // 1. Tìm user theo email (qua UsersService, KHÔNG gọi trực tiếp Repo)
+        // 1. Tìm user theo email
         const user = await this.usersService.getUserByEmail(data.email);
         if (!user) {
             throw new UnauthorizedError('Email hoặc mật khẩu không chính xác');
         }
 
-        // 2. So sánh mật khẩu bằng utility
-        const isPasswordValid = await comparePassword(data.password, user.passwordHash);
+        // 2. So sánh mật khẩu (field mới: hashed_password)
+        const isPasswordValid = await comparePassword(data.password, user.hashed_password);
         if (!isPasswordValid) {
             throw new UnauthorizedError('Email hoặc mật khẩu không chính xác');
         }
 
-        if (user.isDeleted) {
+        // 3. Kiểm tra is_active (thay cho is_deleted)
+        if (!user.is_active) {
             throw new UnauthorizedError('Tài khoản đã bị vô hiệu hóa');
         }
 
-        // 3. Sinh Access Token (JWT)
+        // 4. Sinh Access Token (JWT)
         const payload = {
             userId: user.id,
             email: user.email,
@@ -43,8 +44,8 @@ export class AuthService implements IAuthService {
 
         const accessToken = jwt.sign(payload, securityConfig.jwtSecret, { expiresIn: '1d' });
 
-        // 4. Lọc bỏ các trường nhạy cảm trả về UI
-        const { passwordHash: _, isDeleted, ...safeUser } = user;
+        // 5. Lọc bỏ hashed_password trả về UI
+        const { hashed_password: _, ...safeUser } = user;
 
         return {
             accessToken,
@@ -57,17 +58,17 @@ export class AuthService implements IAuthService {
         if (!user) {
             throw new UnauthorizedError('Người dùng không tồn tại');
         }
-        if (user.isDeleted) {
+        if (!user.is_active) {
             throw new UnauthorizedError('Tài khoản đã bị vô hiệu hóa');
         }
 
-        const isPasswordValid = await comparePassword(currentPassword, user.passwordHash);
+        const isPasswordValid = await comparePassword(currentPassword, user.hashed_password);
         if (!isPasswordValid) {
             throw new UnauthorizedError('Mật khẩu hiện tại không đúng');
         }
 
         const newHash = await hashPassword(newPassword);
-        await this.usersService.updatePasswordHash(userId, newHash, false);
+        await this.usersService.updatePasswordHash(userId, newHash);
 
         return { message: 'Đổi mật khẩu thành công' };
     }
