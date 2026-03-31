@@ -188,6 +188,122 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ITeacherProfile": {
+				"description": "Profiles Model — TypeScript Interfaces & DTOs",
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"user_id": {
+						"type": "string"
+					},
+					"bio": {
+						"type": "string"
+					},
+					"subjects": {
+						"type": "string"
+					},
+					"experience": {
+						"type": "string"
+					},
+					"is_verified": {
+						"type": "boolean"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"user_id",
+					"is_verified",
+					"created_at",
+					"updated_at"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IParentProfile": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"user_id": {
+						"type": "string"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"user_id",
+					"created_at",
+					"updated_at"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IStudentProfile": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"user_id": {
+						"type": "string"
+					},
+					"parent_id": {
+						"type": "string"
+					},
+					"school": {
+						"type": "string"
+					},
+					"grade": {
+						"type": "string"
+					},
+					"academic_level": {
+						"type": "string"
+					},
+					"learning_goal": {
+						"type": "string"
+					},
+					"health_notes": {
+						"type": "string"
+					},
+					"nickname": {
+						"type": "string"
+					},
+					"special_notes": {
+						"type": "string"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updated_at": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"user_id",
+					"created_at",
+					"updated_at"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ICategory": {
 				"description": "Categories Model — Bảng lookup dùng chung cho toàn hệ thống.\nThay thế hardcoded enums bằng dữ liệu DB-driven.",
 				"properties": {
@@ -753,6 +869,238 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/profiles/me": {
+			"get": {
+				"operationId": "GetMyProfile",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/ITeacherProfile"
+										},
+										{
+											"$ref": "#/components/schemas/IParentProfile"
+										},
+										{
+											"$ref": "#/components/schemas/IStudentProfile"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Lấy profile của user đang đăng nhập (Tự fetch đúng model theo cấu hình).",
+				"tags": [
+					"Profiles"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "UpdateMyProfile",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/ITeacherProfile"
+										},
+										{
+											"$ref": "#/components/schemas/IParentProfile"
+										},
+										{
+											"$ref": "#/components/schemas/IStudentProfile"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"description": "Cập nhật Profile của user đang đăng nhập. Data được xác thực theo role.",
+				"tags": [
+					"Profiles"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {}
+						}
+					}
+				}
+			}
+		},
+		"/profiles/student/{userId}": {
+			"get": {
+				"operationId": "GetStudentProfile",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/IStudentProfile"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Xem chi tiết profile của một sinh viên (Teacher/Parent/Admin).",
+				"tags": [
+					"Profiles"
+				],
+				"security": [
+					{
+						"jwt": [
+							"teacher",
+							"parent",
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/profiles/teacher/{userId}": {
+			"get": {
+				"operationId": "GetTeacherProfile",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/ITeacherProfile"
+										}
+									],
+									"nullable": true
+								}
+							}
+						}
+					}
+				},
+				"description": "Xem chi tiết profile giáo viên.",
+				"tags": [
+					"Profiles"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/profiles/student/{studentId}/link-parent": {
+			"post": {
+				"operationId": "LinkParentToStudent",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Liên kết học sinh với phụ huynh (Admin/Teacher).",
+				"tags": [
+					"Profiles"
+				],
+				"security": [
+					{
+						"jwt": [
+							"teacher",
+							"admin"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "studentId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"parent_id": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"parent_id"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/categories": {
