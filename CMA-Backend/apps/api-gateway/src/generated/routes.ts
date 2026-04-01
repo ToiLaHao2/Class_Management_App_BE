@@ -10,6 +10,12 @@ import { AdminController } from './../../../../libs/modules/users/src/admin.cont
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProfilesController } from './../../../../libs/modules/profiles/src/profiles.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { ClassesController } from './../../../../libs/modules/classes/src/classes.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { LessonsController } from './../../../../libs/modules/classes/src/classes.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { LessonsUpdateController } from './../../../../libs/modules/classes/src/classes.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { CategoriesController } from './../../../../libs/modules/categories/src/category.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AuthController } from './../../../../libs/modules/auth/src/auth.controller';
@@ -135,6 +141,147 @@ const models: TsoaRoute.Models = {
             "special_notes": {"dataType":"string"},
             "created_at": {"dataType":"datetime","required":true},
             "updated_at": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IClass": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "class_category_id": {"dataType":"string"},
+            "owner_id": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+            "description": {"dataType":"string"},
+            "thumbnail_url": {"dataType":"string"},
+            "teaching_model": {"dataType":"string"},
+            "price": {"dataType":"double"},
+            "payment_category_id": {"dataType":"string"},
+            "status": {"dataType":"string"},
+            "created_at": {"dataType":"datetime","required":true},
+            "updated_at": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateClassDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "class_category_id": {"dataType":"string"},
+            "owner_id": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+            "description": {"dataType":"string"},
+            "thumbnail_url": {"dataType":"string"},
+            "teaching_model": {"dataType":"string"},
+            "price": {"dataType":"double"},
+            "payment_category_id": {"dataType":"string"},
+            "status": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateClassDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "class_category_id": {"dataType":"string"},
+            "name": {"dataType":"string"},
+            "description": {"dataType":"string"},
+            "thumbnail_url": {"dataType":"string"},
+            "teaching_model": {"dataType":"string"},
+            "price": {"dataType":"double"},
+            "payment_category_id": {"dataType":"string"},
+            "status": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ITeacherClass": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "teacher_id": {"dataType":"string","required":true},
+            "class_id": {"dataType":"string","required":true},
+            "created_at": {"dataType":"datetime","required":true},
+            "updated_at": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AddTeacherToClassDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "teacher_id": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IClassStudent": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "class_id": {"dataType":"string","required":true},
+            "student_id": {"dataType":"string","required":true},
+            "status": {"dataType":"string"},
+            "startdate": {"dataType":"datetime"},
+            "enddate": {"dataType":"datetime"},
+            "created_at": {"dataType":"datetime","required":true},
+            "updated_at": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "EnrollStudentDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "student_id": {"dataType":"string","required":true},
+            "status": {"dataType":"string"},
+            "startdate": {"dataType":"string"},
+            "enddate": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateStudentStatusDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "status": {"dataType":"string","required":true},
+            "enddate": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ILesson": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "class_id": {"dataType":"string","required":true},
+            "teacher_id": {"dataType":"string","required":true},
+            "title": {"dataType":"string","required":true},
+            "description": {"dataType":"string"},
+            "order_index": {"dataType":"double"},
+            "created_at": {"dataType":"datetime","required":true},
+            "updated_at": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateLessonDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "teacher_id": {"dataType":"string"},
+            "title": {"dataType":"string","required":true},
+            "description": {"dataType":"string"},
+            "order_index": {"dataType":"double"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateLessonDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "title": {"dataType":"string"},
+            "description": {"dataType":"string"},
+            "order_index": {"dataType":"double"},
         },
         "additionalProperties": false,
     },
@@ -744,6 +891,483 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'linkParentToStudent',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassesController_getClasses: Record<string, TsoaRoute.ParameterSchema> = {
+                owner_id: {"in":"query","name":"owner_id","dataType":"string"},
+                class_category_id: {"in":"query","name":"class_category_id","dataType":"string"},
+        };
+        app.get('/classes',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController.prototype.getClasses)),
+
+            async function ClassesController_getClasses(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassesController_getClasses, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<ClassesController>(ClassesController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getClasses',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassesController_getClass: Record<string, TsoaRoute.ParameterSchema> = {
+                classId: {"in":"path","name":"classId","required":true,"dataType":"string"},
+        };
+        app.get('/classes/:classId',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController.prototype.getClass)),
+
+            async function ClassesController_getClass(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassesController_getClass, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<ClassesController>(ClassesController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getClass',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassesController_createClass: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"ref":"CreateClassDTO"},
+        };
+        app.post('/classes',
+            authenticateMiddleware([{"jwt":["teacher","admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController.prototype.createClass)),
+
+            async function ClassesController_createClass(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassesController_createClass, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<ClassesController>(ClassesController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'createClass',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassesController_updateClass: Record<string, TsoaRoute.ParameterSchema> = {
+                classId: {"in":"path","name":"classId","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"UpdateClassDTO"},
+        };
+        app.put('/classes/:classId',
+            authenticateMiddleware([{"jwt":["teacher","admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController.prototype.updateClass)),
+
+            async function ClassesController_updateClass(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassesController_updateClass, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<ClassesController>(ClassesController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'updateClass',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassesController_getTeachersInClass: Record<string, TsoaRoute.ParameterSchema> = {
+                classId: {"in":"path","name":"classId","required":true,"dataType":"string"},
+        };
+        app.get('/classes/:classId/teachers',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController.prototype.getTeachersInClass)),
+
+            async function ClassesController_getTeachersInClass(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassesController_getTeachersInClass, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<ClassesController>(ClassesController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getTeachersInClass',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassesController_addTeacher: Record<string, TsoaRoute.ParameterSchema> = {
+                classId: {"in":"path","name":"classId","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"AddTeacherToClassDTO"},
+        };
+        app.post('/classes/:classId/teachers',
+            authenticateMiddleware([{"jwt":["teacher","admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController.prototype.addTeacher)),
+
+            async function ClassesController_addTeacher(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassesController_addTeacher, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<ClassesController>(ClassesController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'addTeacher',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassesController_removeTeacher: Record<string, TsoaRoute.ParameterSchema> = {
+                classId: {"in":"path","name":"classId","required":true,"dataType":"string"},
+                teacherId: {"in":"path","name":"teacherId","required":true,"dataType":"string"},
+        };
+        app.delete('/classes/:classId/teachers/:teacherId',
+            authenticateMiddleware([{"jwt":["teacher","admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController.prototype.removeTeacher)),
+
+            async function ClassesController_removeTeacher(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassesController_removeTeacher, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<ClassesController>(ClassesController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'removeTeacher',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassesController_getStudents: Record<string, TsoaRoute.ParameterSchema> = {
+                classId: {"in":"path","name":"classId","required":true,"dataType":"string"},
+        };
+        app.get('/classes/:classId/students',
+            authenticateMiddleware([{"jwt":["teacher","admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController.prototype.getStudents)),
+
+            async function ClassesController_getStudents(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassesController_getStudents, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<ClassesController>(ClassesController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getStudents',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassesController_enrollStudent: Record<string, TsoaRoute.ParameterSchema> = {
+                classId: {"in":"path","name":"classId","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"EnrollStudentDTO"},
+        };
+        app.post('/classes/:classId/enroll',
+            authenticateMiddleware([{"jwt":["teacher","admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController.prototype.enrollStudent)),
+
+            async function ClassesController_enrollStudent(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassesController_enrollStudent, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<ClassesController>(ClassesController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'enrollStudent',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsClassesController_updateStudentStatus: Record<string, TsoaRoute.ParameterSchema> = {
+                classId: {"in":"path","name":"classId","required":true,"dataType":"string"},
+                studentId: {"in":"path","name":"studentId","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"UpdateStudentStatusDTO"},
+        };
+        app.put('/classes/:classId/students/:studentId/status',
+            authenticateMiddleware([{"jwt":["teacher","admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController)),
+            ...(fetchMiddlewares<RequestHandler>(ClassesController.prototype.updateStudentStatus)),
+
+            async function ClassesController_updateStudentStatus(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsClassesController_updateStudentStatus, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<ClassesController>(ClassesController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'updateStudentStatus',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLessonsController_getLessons: Record<string, TsoaRoute.ParameterSchema> = {
+                classId: {"in":"path","name":"classId","required":true,"dataType":"string"},
+        };
+        app.get('/classes/:classId/lessons',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(LessonsController)),
+            ...(fetchMiddlewares<RequestHandler>(LessonsController.prototype.getLessons)),
+
+            async function LessonsController_getLessons(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLessonsController_getLessons, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<LessonsController>(LessonsController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getLessons',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLessonsController_createLesson: Record<string, TsoaRoute.ParameterSchema> = {
+                classId: {"in":"path","name":"classId","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"CreateLessonDTO"},
+        };
+        app.post('/classes/:classId/lessons',
+            authenticateMiddleware([{"jwt":["teacher","admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(LessonsController)),
+            ...(fetchMiddlewares<RequestHandler>(LessonsController.prototype.createLesson)),
+
+            async function LessonsController_createLesson(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLessonsController_createLesson, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<LessonsController>(LessonsController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'createLesson',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsLessonsUpdateController_updateLesson: Record<string, TsoaRoute.ParameterSchema> = {
+                lessonId: {"in":"path","name":"lessonId","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"UpdateLessonDTO"},
+        };
+        app.put('/lessons/:lessonId',
+            authenticateMiddleware([{"jwt":["teacher","admin"]}]),
+            ...(fetchMiddlewares<RequestHandler>(LessonsUpdateController)),
+            ...(fetchMiddlewares<RequestHandler>(LessonsUpdateController.prototype.updateLesson)),
+
+            async function LessonsUpdateController_updateLesson(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsLessonsUpdateController_updateLesson, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<LessonsUpdateController>(LessonsUpdateController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'updateLesson',
                 controller,
                 response,
                 next,
