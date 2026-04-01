@@ -58,8 +58,12 @@ export class CloudinaryAdapter implements IStorageProvider {
         
         // Cloudinary tự động check mimeType qua resource_type: 'auto'
         return new Promise((resolve, reject) => {
+            const publicId = (typeof originalName === 'string' && originalName.includes('.')) 
+                ? originalName.split('.')[0] 
+                : `file_${Date.now()}`;
+
             const uploadStream = cloudinary.uploader.upload_stream(
-                { folder, resource_type: 'auto', public_id: originalName.split('.')[0] },
+                { folder, resource_type: 'auto', public_id: publicId },
                 (error, result) => {
                     if (error) return reject(error);
                     const res = result as UploadApiResponse;

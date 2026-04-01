@@ -40,7 +40,8 @@ export class AttachmentsService implements IAttachmentsService {
     ): Promise<IAttachment> {
         if (!file) throw new BadRequestError('Không tìm thấy file để upload');
 
-        const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+        const rawName = file.originalname || 'upload_file.bin';
+        const originalName = Buffer.from(rawName, 'latin1').toString('utf8');
 
         // 1. Upload file lên Cloud
         const folderName = `cma_${refType}s`; 

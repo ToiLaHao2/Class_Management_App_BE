@@ -12,8 +12,6 @@ import { ClassSchedulesController } from './../../../../libs/modules/schedules/s
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { SchedulesController } from './../../../../libs/modules/schedules/src/schedules.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { AttachmentsController } from './../../../../libs/modules/schedules/src/schedules.controller';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProfilesController } from './../../../../libs/modules/profiles/src/profiles.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ClassesController } from './../../../../libs/modules/classes/src/classes.controller';
@@ -25,6 +23,8 @@ import { LessonsUpdateController } from './../../../../libs/modules/classes/src/
 import { CategoriesController } from './../../../../libs/modules/categories/src/category.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AuthController } from './../../../../libs/modules/auth/src/auth.controller';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { AttachmentsController } from './../../../../libs/modules/attachments/src/attachments.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ClassAssignmentsController } from './../../../../libs/modules/assignments/src/assignments.controller';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -40,6 +40,8 @@ import { expressAuthentication } from './../../../../libs/core/http/src/authenti
 import { iocContainer } from './../ioc';
 import type { IocContainer, IocContainerFactory } from '@tsoa/runtime';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
+const multer = require('multer');
+
 
 const expressAuthenticationRecasted = expressAuthentication as (req: ExRequest, securityName: string, scopes?: string[], res?: ExResponse) => Promise<any>;
 
@@ -187,35 +189,6 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "logs": {"dataType":"array","array":{"dataType":"refObject","ref":"CreateLessonLogDTO"},"required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "IAttachment": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"string","required":true},
-            "ref_type": {"dataType":"string","required":true},
-            "ref_id": {"dataType":"string","required":true},
-            "file_url": {"dataType":"string","required":true},
-            "file_name": {"dataType":"string"},
-            "file_type": {"dataType":"string"},
-            "file_size": {"dataType":"double"},
-            "uploaded_by": {"dataType":"string"},
-            "created_at": {"dataType":"datetime","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CreateAttachmentDTO": {
-        "dataType": "refObject",
-        "properties": {
-            "ref_type": {"dataType":"string","required":true},
-            "ref_id": {"dataType":"string","required":true},
-            "file_url": {"dataType":"string","required":true},
-            "file_name": {"dataType":"string"},
-            "file_type": {"dataType":"string"},
-            "file_size": {"dataType":"double"},
         },
         "additionalProperties": false,
     },
@@ -490,6 +463,24 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IAttachment": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "ref_type": {"dataType":"string","required":true},
+            "ref_id": {"dataType":"string","required":true},
+            "file_name": {"dataType":"string","required":true},
+            "file_type": {"dataType":"string","required":true},
+            "file_size": {"dataType":"double","required":true},
+            "url": {"dataType":"string","required":true},
+            "provider": {"dataType":"string","required":true},
+            "provider_public_id": {"dataType":"string","required":true},
+            "uploaded_by": {"dataType":"string"},
+            "created_at": {"dataType":"datetime","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IAssignment": {
         "dataType": "refObject",
         "properties": {
@@ -642,13 +633,14 @@ const templateService = new ExpressTemplateService(models, {"noImplicitAdditiona
 
 
 
-export function RegisterRoutes(app: Router) {
+export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof multer>}) {
 
     // ###########################################################################################################
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
 
+    const upload = opts?.multer ||  multer({"limits":{"fileSize":8388608}});
 
     
         const argsUsersController_getUsers: Record<string, TsoaRoute.ParameterSchema> = {
@@ -1259,116 +1251,6 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: 201,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsAttachmentsController_getAttachments: Record<string, TsoaRoute.ParameterSchema> = {
-                ref_type: {"in":"query","name":"ref_type","required":true,"dataType":"string"},
-                ref_id: {"in":"query","name":"ref_id","required":true,"dataType":"string"},
-        };
-        app.get('/attachments',
-            authenticateMiddleware([{"jwt":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(AttachmentsController)),
-            ...(fetchMiddlewares<RequestHandler>(AttachmentsController.prototype.getAttachments)),
-
-            async function AttachmentsController_getAttachments(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsAttachmentsController_getAttachments, request, response });
-
-                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
-
-                const controller: any = await container.get<AttachmentsController>(AttachmentsController);
-                if (typeof controller['setStatus'] === 'function') {
-                controller.setStatus(undefined);
-                }
-
-              await templateService.apiHandler({
-                methodName: 'getAttachments',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsAttachmentsController_addAttachment: Record<string, TsoaRoute.ParameterSchema> = {
-                req: {"in":"request","name":"req","required":true,"dataType":"object"},
-                body: {"in":"body","name":"body","required":true,"ref":"CreateAttachmentDTO"},
-        };
-        app.post('/attachments',
-            authenticateMiddleware([{"jwt":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(AttachmentsController)),
-            ...(fetchMiddlewares<RequestHandler>(AttachmentsController.prototype.addAttachment)),
-
-            async function AttachmentsController_addAttachment(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsAttachmentsController_addAttachment, request, response });
-
-                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
-
-                const controller: any = await container.get<AttachmentsController>(AttachmentsController);
-                if (typeof controller['setStatus'] === 'function') {
-                controller.setStatus(undefined);
-                }
-
-              await templateService.apiHandler({
-                methodName: 'addAttachment',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: 201,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsAttachmentsController_removeAttachment: Record<string, TsoaRoute.ParameterSchema> = {
-                id: {"in":"path","name":"id","required":true,"dataType":"string"},
-        };
-        app.delete('/attachments/:id',
-            authenticateMiddleware([{"jwt":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(AttachmentsController)),
-            ...(fetchMiddlewares<RequestHandler>(AttachmentsController.prototype.removeAttachment)),
-
-            async function AttachmentsController_removeAttachment(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsAttachmentsController_removeAttachment, request, response });
-
-                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
-
-                const controller: any = await container.get<AttachmentsController>(AttachmentsController);
-                if (typeof controller['setStatus'] === 'function') {
-                controller.setStatus(undefined);
-                }
-
-              await templateService.apiHandler({
-                methodName: 'removeAttachment',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
               });
             } catch (err) {
                 return next(err);
@@ -2382,6 +2264,125 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'changePassword',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAttachmentsController_getAttachments: Record<string, TsoaRoute.ParameterSchema> = {
+                ref_type: {"in":"query","name":"ref_type","required":true,"dataType":"string"},
+                ref_id: {"in":"query","name":"ref_id","required":true,"dataType":"string"},
+        };
+        app.get('/attachments',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(AttachmentsController)),
+            ...(fetchMiddlewares<RequestHandler>(AttachmentsController.prototype.getAttachments)),
+
+            async function AttachmentsController_getAttachments(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAttachmentsController_getAttachments, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AttachmentsController>(AttachmentsController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'getAttachments',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAttachmentsController_uploadAttachment: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                ref_type: {"in":"formData","name":"ref_type","required":true,"dataType":"string"},
+                ref_id: {"in":"formData","name":"ref_id","required":true,"dataType":"string"},
+                file: {"in":"formData","name":"file","required":true,"dataType":"file"},
+        };
+        app.post('/attachments/upload',
+            authenticateMiddleware([{"jwt":[]}]),
+            upload.fields([
+                {
+                    name: "file",
+                    maxCount: 1
+                }
+            ]),
+            ...(fetchMiddlewares<RequestHandler>(AttachmentsController)),
+            ...(fetchMiddlewares<RequestHandler>(AttachmentsController.prototype.uploadAttachment)),
+
+            async function AttachmentsController_uploadAttachment(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAttachmentsController_uploadAttachment, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AttachmentsController>(AttachmentsController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'uploadAttachment',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAttachmentsController_removeAttachment: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
+        app.delete('/attachments/:id',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(AttachmentsController)),
+            ...(fetchMiddlewares<RequestHandler>(AttachmentsController.prototype.removeAttachment)),
+
+            async function AttachmentsController_removeAttachment(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAttachmentsController_removeAttachment, request, response });
+
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AttachmentsController>(AttachmentsController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
+
+              await templateService.apiHandler({
+                methodName: 'removeAttachment',
                 controller,
                 response,
                 next,

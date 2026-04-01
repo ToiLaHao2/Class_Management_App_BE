@@ -365,78 +365,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"IAttachment": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"ref_type": {
-						"type": "string"
-					},
-					"ref_id": {
-						"type": "string"
-					},
-					"file_url": {
-						"type": "string"
-					},
-					"file_name": {
-						"type": "string"
-					},
-					"file_type": {
-						"type": "string"
-					},
-					"file_size": {
-						"type": "number",
-						"format": "double"
-					},
-					"uploaded_by": {
-						"type": "string"
-					},
-					"created_at": {
-						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"id",
-					"ref_type",
-					"ref_id",
-					"file_url",
-					"created_at"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"CreateAttachmentDTO": {
-				"properties": {
-					"ref_type": {
-						"type": "string"
-					},
-					"ref_id": {
-						"type": "string"
-					},
-					"file_url": {
-						"type": "string"
-					},
-					"file_name": {
-						"type": "string"
-					},
-					"file_type": {
-						"type": "string"
-					},
-					"file_size": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"ref_type",
-					"ref_id",
-					"file_url"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"ITeacherProfile": {
 				"description": "Profiles Model — TypeScript Interfaces & DTOs",
 				"properties": {
@@ -1028,6 +956,59 @@
 				"required": [
 					"currentPassword",
 					"newPassword"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IAttachment": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"ref_type": {
+						"type": "string"
+					},
+					"ref_id": {
+						"type": "string"
+					},
+					"file_name": {
+						"type": "string"
+					},
+					"file_type": {
+						"type": "string"
+					},
+					"file_size": {
+						"type": "number",
+						"format": "double"
+					},
+					"url": {
+						"type": "string"
+					},
+					"provider": {
+						"type": "string"
+					},
+					"provider_public_id": {
+						"type": "string"
+					},
+					"uploaded_by": {
+						"type": "string"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"ref_type",
+					"ref_id",
+					"file_name",
+					"file_type",
+					"file_size",
+					"url",
+					"provider",
+					"provider_public_id",
+					"created_at"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -2079,132 +2060,6 @@
 						}
 					}
 				}
-			}
-		},
-		"/attachments": {
-			"get": {
-				"operationId": "GetAttachments",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/IAttachment"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"description": "Lấy tệp đính kèm theo loại và ID gốc",
-				"tags": [
-					"Attachments"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "ref_type",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "ref_id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			},
-			"post": {
-				"operationId": "AddAttachment",
-				"responses": {
-					"201": {
-						"description": "Created",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IAttachment"
-								}
-							}
-						}
-					}
-				},
-				"description": "Upload/Đăng ký tệp đính kèm mới",
-				"tags": [
-					"Attachments"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CreateAttachmentDTO"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/attachments/{id}": {
-			"delete": {
-				"operationId": "RemoveAttachment",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"message"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"description": "Xóa tệp đính kèm",
-				"tags": [
-					"Attachments"
-				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
 			}
 		},
 		"/profiles/me": {
@@ -3471,6 +3326,154 @@
 						}
 					}
 				}
+			}
+		},
+		"/attachments": {
+			"get": {
+				"operationId": "GetAttachments",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IAttachment"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Lấy tệp đính kèm theo loại và ID gốc",
+				"tags": [
+					"Attachments"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "ref_type",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "ref_id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/attachments/upload": {
+			"post": {
+				"operationId": "UploadAttachment",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IAttachment"
+								}
+							}
+						}
+					}
+				},
+				"description": "Upload và Ghim tệp đính kèm mới (Dùng Multipart FormData)",
+				"tags": [
+					"Attachments"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"ref_type": {
+										"type": "string",
+										"description": "Loại đối tượng (vd: 'schedule', 'assignment')"
+									},
+									"ref_id": {
+										"type": "string",
+										"description": "ID của đối tượng"
+									},
+									"file": {
+										"type": "string",
+										"format": "binary",
+										"description": "Tệp tải lên (Dung lượng Tối đa: 20MB)"
+									}
+								},
+								"required": [
+									"ref_type",
+									"ref_id",
+									"file"
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/attachments/{id}": {
+			"delete": {
+				"operationId": "RemoveAttachment",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "Xóa tệp đính kèm",
+				"tags": [
+					"Attachments"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/classes/{classId}/assignments": {
