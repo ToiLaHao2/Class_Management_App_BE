@@ -1,6 +1,8 @@
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { container } from '@core/container';
+import * as jwt from 'jsonwebtoken';
+import { securityConfig } from '@core/config';
 
 const PORT = 3002;
 
@@ -12,15 +14,44 @@ function startSocketServer(adapter: ReturnType<typeof createAdapter> | null): vo
         ...(adapter ? { adapter } : {})
     });
 
+    // Authentication Middleware
+    io.use((socket: Socket, next) => {
+        const token = socket.handshake.auth.token || socket.handshake.headers['authorization']?.replace('Bearer ', '');
+        
+        if (!token) {
+            console.log(`🔌 [Auth Failed] Missing token for socket: ${socket.id}`);
+            return next(new Error('Authentication Error: Token missing'));
+        }
+
+        try {
+            const decoded = jwt.verify(token, securityConfig.jwtSecret) as { userId: string, role: string };
+            // Lấy ID thật sự của người dùng gán vào socket
+            (socket as any).userId = decoded.userId;
+            (socket as any).userRole = decoded.role;
+            next();
+        } catch (error) {
+            console.log(`🔌 [Auth Error] Invalid token for socket: ${socket.id}`);
+            return next(new Error('Authentication Error: Invalid token'));
+        }
+    });
+
     io.on('connection', (socket) => {
-        console.log(`⚡ Client connected: ${socket.id}`);
+        const userId = (socket as any).userId;
+        console.log(`⚡ Client connected: ${socket.id} (User: ${userId})`);
+
+        // Gán User vào 1 Room riêng biệt mang tên id của họ để Emitter bắn trúng
+        const userRoom = `user_${userId}`;
+        socket.join(userRoom);
+        console.log(`📍 Socket ${socket.id} joined room: ${userRoom}`);
+
         socket.on('disconnect', () => {
-            console.log(`🔌 Client disconnected: ${socket.id}`);
+            console.log(`🔌 Client disconnected: ${socket.id} (User: ${userId})`);
         });
     });
 
     const mode = adapter ? 'Redis adapter' : 'in-memory (single-node)';
     console.log(`🚀 Socket Server running on port ${PORT} — ${mode}`);
+    console.log(`ℹ️  Listening for events via Emit Redis channel...`);
 }
 
 const cache = container.resolve('cache');
@@ -29,7 +60,7 @@ const baseConnection = cache.getRedisClient();
 if (!baseConnection) {
     startSocketServer(null);
 } else {
-    // Socket.io Redis adapter needs dedicated connections
+    // Socket.io Redis adapter needs dedicated connections for pub and sub
     const pubClient = baseConnection.duplicate();
     const subClient = baseConnection.duplicate();
 
@@ -38,9 +69,8 @@ if (!baseConnection) {
             console.log('✅ [Socket] Redis adapter connected.');
             startSocketServer(createAdapter(pubClient, subClient!));
         })
-        .catch(() => {
-            console.warn('⚠️  [Socket] Starting without Redis adapter (single-node mode).');
+        .catch((err) => {
+            console.warn('⚠️  [Socket] Starting without Redis adapter (single-node mode). Error:', err.message);
             startSocketServer(null);
         });
 }
-
