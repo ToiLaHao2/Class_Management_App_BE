@@ -30,6 +30,8 @@ const envSchema = z.object({
     CLOUDINARY_API_KEY: z.string().optional(),
     CLOUDINARY_API_SECRET: z.string().optional(),
 
+    STORAGE_PROVIDER: z.enum(['local', 'cloudflare_r2', 'cloudinary', 'aws_s3']).default('local'),
+
     RATE_LIMIT_WINDOW_MS: z.string().default('900000').transform(Number),    // 15 minutes
     RATE_LIMIT_MAX: z.string().default('100').transform(Number),
     RATE_LIMIT_AUTH_MAX: z.string().default('10').transform(Number),
@@ -79,10 +81,28 @@ export const cacheConfig = {
     password: envVars.REDIS_PASSWORD,
 } as const;
 
+/**
+ * Free-tier storage limits (GB) per provider.
+ * Khi đổi STORAGE_PROVIDER trong .env, hệ thống tự biết giới hạn tương ứng.
+ * - local: chạy dev không giới hạn thực tế, đặt mốc 5GB làm chuẩn monitoring
+ * - cloudflare_r2: Free 10 GB/tháng
+ * - cloudinary: Free 25 GB bandwidth nhưng chỉ ~10 GB storage
+ * - aws_s3: Free 5 GB (12 tháng đầu)
+ */
+const PROVIDER_STORAGE_LIMITS_GB: Record<string, number> = {
+    local: 5,
+    cloudflare_r2: 10,
+    cloudinary: 10,
+    aws_s3: 5,
+};
+
 export const storageConfig = {
+    provider: envVars.STORAGE_PROVIDER,
     cloudName: envVars.CLOUDINARY_CLOUD_NAME,
     apiKey: envVars.CLOUDINARY_API_KEY,
     apiSecret: envVars.CLOUDINARY_API_SECRET,
+    /** Giới hạn lưu trữ tự động tra theo provider — không cần ghi cứng */
+    storageLimitGb: PROVIDER_STORAGE_LIMITS_GB[envVars.STORAGE_PROVIDER] ?? 5,
 } as const;
 
 export const rateLimitConfig = {

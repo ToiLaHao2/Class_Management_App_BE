@@ -142,3 +142,7 @@ vite.config.ts.timestamp-*
 *firebase-admin*.json
 *service-account*.json
 *private-key*.json
+
+# Playwright Test Results
+playwright-report/
+test-results/

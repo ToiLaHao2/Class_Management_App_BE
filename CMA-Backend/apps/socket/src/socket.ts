@@ -8,11 +8,13 @@ const PORT = 3002;
 
 console.log('\n--- 🔌 SOCKET SERVICE STARTING ---');
 
-function startSocketServer(adapter: ReturnType<typeof createAdapter> | null): void {
-    const io = new Server(PORT, {
+export function startSocketServer(adapter: ReturnType<typeof createAdapter> | null, httpServer?: any): void {
+    const ioOptions = {
         cors: { origin: '*', methods: ['GET', 'POST'] },
         ...(adapter ? { adapter } : {})
-    });
+    };
+    
+    const io = httpServer ? new Server(httpServer, ioOptions) : new Server(PORT, ioOptions);
 
     // Authentication Middleware
     io.use((socket: Socket, next) => {
@@ -50,27 +52,37 @@ function startSocketServer(adapter: ReturnType<typeof createAdapter> | null): vo
     });
 
     const mode = adapter ? 'Redis adapter' : 'in-memory (single-node)';
-    console.log(`🚀 Socket Server running on port ${PORT} — ${mode}`);
+    if (httpServer) {
+        console.log(`🚀 Socket Server attached to existing HTTP server — ${mode}`);
+    } else {
+        console.log(`🚀 Socket Server running on port ${PORT} — ${mode}`);
+    }
     console.log(`ℹ️  Listening for events via Emit Redis channel...`);
 }
 
-const cache = container.resolve('cache');
-const baseConnection = cache.getRedisClient();
+export async function bootstrapSocket(httpServer?: any) {
+    const cache = container.resolve('cache');
+    const baseConnection = cache.getRedisClient();
 
-if (!baseConnection) {
-    startSocketServer(null);
-} else {
-    // Socket.io Redis adapter needs dedicated connections for pub and sub
-    const pubClient = baseConnection.duplicate();
-    const subClient = baseConnection.duplicate();
+    if (!baseConnection) {
+        startSocketServer(null, httpServer);
+    } else {
+        // Socket.io Redis adapter needs dedicated connections for pub and sub
+        const pubClient = baseConnection.duplicate();
+        const subClient = baseConnection.duplicate();
 
-    Promise.all([pubClient.connect(), subClient.connect()])
-        .then(() => {
+        try {
+            await Promise.all([pubClient.connect(), subClient.connect()]);
             console.log('✅ [Socket] Redis adapter connected.');
-            startSocketServer(createAdapter(pubClient, subClient!));
-        })
-        .catch((err) => {
+            startSocketServer(createAdapter(pubClient, subClient), httpServer);
+        } catch (err: any) {
             console.warn('⚠️  [Socket] Starting without Redis adapter (single-node mode). Error:', err.message);
-            startSocketServer(null);
-        });
+            startSocketServer(null, httpServer);
+        }
+    }
+}
+
+// Standalone initialization
+if (!process.env.COMBO_MODE) {
+    bootstrapSocket().catch(err => console.error(err));
 }

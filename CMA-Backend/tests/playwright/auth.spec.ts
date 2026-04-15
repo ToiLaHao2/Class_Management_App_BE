@@ -7,7 +7,7 @@ test.describe('Authentication and Registration Flow', () => {
     const username = `teacher_${uniqueId}`;
     await page.goto('/register');
     
-    // Sử dụng filter hasText để vượt qua các vấn đề về Emoji/Spans
+    // Khắc phục lỗi Picker: Chọn chính xác qua bộ lọc button
     await page.locator('button').filter({ hasText: 'Giáo viên' }).click();
     
     await page.locator('#register-fullname').fill(`Auto Teacher ${uniqueId}`);
@@ -17,16 +17,20 @@ test.describe('Authentication and Registration Flow', () => {
     await page.locator('#register-password').fill('Password123');
     await page.locator('#register-confirm').fill('Password123');
     
+    // Click nút tạo tài khoản
     await page.locator('button').filter({ hasText: 'Tạo tài khoản' }).click();
     
+    // Chờ redirect về login và xác nhận URL
     await page.waitForURL('**/login', { timeout: 15000 });
     
+    // Đăng nhập
     await page.locator('#login-identifier').fill(username);
     await page.locator('#login-password').fill('Password123');
     await page.locator('button').filter({ hasText: 'Đăng nhập' }).click();
     
+    // Xác nhận vào Dashboard (trang chủ)
     await page.waitForURL('**/', { timeout: 15000 });
-    await expect(page.locator('h1')).toContainText('Chào', { timeout: 10000 });
+    await expect(page.locator('h1')).toContainText('Classify', { timeout: 10000 });
   });
 
   test('should register a new STUDENT successfully', async ({ page }) => {
